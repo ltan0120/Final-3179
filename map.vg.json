@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "title": "Number of Workplace Deaths Per Government Area",
@@ -34,41 +33,4 @@
       {"field": "Total Number of Deaths", "type": "quantitative"}
     ]
   }
-=======
-{
-  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-  "title": "Number of Workplace Deaths Per Government Area",
-  "width": 800,
-  "height": 400,
-  "projection": {"type": "equalEarth"},
-  "data": {
-    "url": "https://raw.githubusercontent.com/FIT3179/map.topojson",
-    "format": {"type": "topojson", "feature": "map"}
-  },
-  "transform": [
-    {
-      "lookup": "properties.NAME",
-      "from": {
-        "data": {
-          "url": "https://raw.githubusercontent.com/FIT3179/data.csv"
-        },
-        "key": "Local Government Area",
-        "fields": ["Total Number of Deaths"]
-      }
-    },
-    {"calculate": "datum.Total Number of Deaths + 0.1", "as": "Total Number of Deaths"}
-  ],
-  "mark": {"type": "geoshape"},
-  "encoding": {
-    "color": {
-      "field": "Total Number of Deaths",
-      "type": "quantitative",
-      "scale": {"type": "log"}
-    },
-    "tooltip": [
-      {"field": "properties.NAME", "type": "nominal", "title": "Local Government Area"},
-      {"field": "Total Number of Deaths", "type": "quantitative"}
-    ]
-  }
->>>>>>> 1434a2192bc675420fb8b91ae52306fe5c59dbf8
 }
