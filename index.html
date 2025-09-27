@@ -43,7 +43,7 @@
       ],
       "mark": {
         "type": "geoshape",
-        "stroke": "darkgrey",
+        "stroke": "black",
         "strokeWidth": 0.5
       },
       "encoding": {
@@ -62,7 +62,11 @@
           }
         },
         "tooltip": [
-          {"field": "properties.LGA_NAME", "type": "nominal", "title": "Local Government Area"},
+          {
+            "field": "properties.LGA_NAME",
+            "type": "nominal",
+            "title": "Local Government Area"
+          },
           {
             "field": "DeathsPer100k",
             "type": "nominal",
@@ -71,9 +75,10 @@
           },
           {
             "field": "Population",
-            "type": "nominal",
+            "type": "quantitative",
             "title": "Population",
-            "calculate": "datum['DeathsPer100k'] == -1 ? 'NA' : format(datum['Population'], ',')"
+            "format": ",",
+            "calculate": "datum['DeathsPer100k'] == -1 ? null : datum['Population']"
           }
         ]
       }
