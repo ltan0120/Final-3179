@@ -5,8 +5,8 @@
   "height": 400,
   "projection": {"type": "equalEarth"},
   "data": {
-    "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/map.topojson",
-    "format": {"type": "topojson", "feature": "LGA_POLYGON"}
+    "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/mapshaperoutput2.json",
+    "format": {"type": "topojson", "feature": "yourLayerName"}
   },
   "transform": [
     {
