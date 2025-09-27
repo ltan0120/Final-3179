@@ -13,19 +13,28 @@
       "lookup": "properties.LGA_NAME",
       "from": {
         "data": {
-          "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/data.csv"
+          "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/data_clean.csv"
         },
         "key": "Local Government Area",
         "fields": ["Total Number of Deaths"]
       }
     }
   ],
-  "mark": {"type": "geoshape"},
+  "mark": {
+    "type": "geoshape",
+    "stroke": "gray",
+    "strokeWidth": 0.5
+  },
   "encoding": {
     "color": {
       "field": "Total Number of Deaths",
       "type": "quantitative",
-      "scale": {"scheme": "reds"}
+      "scale": {
+        "scheme": "reds",
+        "domainMin": 0,
+        "nullColor": "#f0f0f0"
+      },
+      "legend": {"title": "Total Deaths"}
     },
     "tooltip": [
       {"field": "properties.LGA_NAME", "type": "nominal", "title": "LGA"},
