@@ -27,14 +27,13 @@
   },
   "encoding": {
     "color": {
-      "field": "Total Number of Deaths",
-      "type": "quantitative",
-      "scale": {
-        "scheme": "reds",
-        "domainMin": 0,
-        "nullColor": "#f0f0f0"
+      "condition": {
+        "test": "datum['Total Number of Deaths'] != null",
+        "field": "Total Number of Deaths",
+        "type": "quantitative",
+        "scale": {"scheme": "reds"}
       },
-      "legend": {"title": "Total Deaths"}
+      "value": "#f0f0f0"
     },
     "tooltip": [
       {"field": "properties.LGA_NAME", "type": "nominal", "title": "LGA"},

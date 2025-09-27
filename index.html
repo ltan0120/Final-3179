@@ -1,27 +1,71 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!-- Import Vega & Vega-Lite (does not have to be from CDN) -->
   <script src="https://cdn.jsdelivr.net/npm/vega@5.22.1"></script>
   <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.5.0"></script>
   <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.21.0"></script>
-  
-  <!-- CSS file -->
-  <link rel="stylesheet" type="text/css" href="css/styles.css" media="all">
-
-
 </head>
 <body>
-  
-<div id="choropleth_map"></div>
+  <div id="choropleth_map"></div>
 
-<script type="text/javascript">
+  <script type="text/javascript">
+    var spec2 = {
+      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+      "title": "Total Deaths by Local Government Area",
+      "width": 800,
+      "height": 600,
+      "background": "#b4d8fa",  // light blue map background
+      "projection": {"type": "mercator"},
+      "data": {
+        "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/mapshaperoutput2.json",
+        "format": {"type": "topojson", "feature": "LGA_POLYGON"}
+      },
+      "transform": [
+        {
+          "lookup": "properties.LGA_NAME",
+          "from": {
+            "data": {
+              "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/data_clean.csv"
+            },
+            "key": "Local Government Area",
+            "fields": ["Total Number of Deaths"]
+          }
+        },
+        {
+          "calculate": "datum['Total Number of Deaths'] == null ? -1 : datum['Total Number of Deaths']",
+          "as": "DeathsForColor"
+        }
+      ],
+      "mark": {
+        "type": "geoshape",
+        "stroke": "dark grey",
+        "strokeWidth": 0.5
+      },
+      "encoding": {
+        "color": {
+          "field": "DeathsForColor",
+          "type": "quantitative",
+          "scale": {
+            "domain": [0, 1, 5, 10, 20, 30], // adjust based on your data range
+            "range": ["#fee5d9","#fcae91","#fb6a4a","#de2d26","#a50f15"],
+            "nice": true
+          },
+          "legend": {"title": "Total Deaths"},
+          "condition": {
+            "test": "datum['DeathsForColor'] == -1",
+            "value": "#FFFFFF" // dark blue for nulls
+          }
+        },
+        "tooltip": [
+          {"field": "properties.LGA_NAME", "type": "nominal", "title": "Local Government Area"},
+          {"field": "Total Number of Deaths", "type": "quantitative"}
+        ]
+      }
+    };
 
-  var spec2 = "map.vg.json";
-  vegaEmbed('#choropleth_map', spec2).then(function(result) {
-    // Access the Vega view instance (https://vega.github.io/vega/docs/api/view/) as result.view
-  }).catch(console.error);
-</script>
-
+    vegaEmbed('#choropleth_map', spec2).then(function(result) {
+      // result.view is the Vega view instance
+    }).catch(console.error);
+  </script>
 </body>
 </html>
