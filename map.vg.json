@@ -1,16 +1,16 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-  "title": "Number of Workplace Deaths Per Government Area",
+  "title": "Total Deaths by Local Government Area",
   "width": 800,
-  "height": 400,
-  "projection": {"type": "equalEarth"},
+  "height": 600,
+  "projection": {"type": "mercator"},
   "data": {
     "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/mapshaperoutput2.json",
-    "format": {"type": "topojson", "feature": "yourLayerName"}
+    "format": {"type": "topojson", "feature": "LGA_POLYGON"}
   },
   "transform": [
     {
-      "lookup": "properties.NAME",
+      "lookup": "properties.LGA_NAME",
       "from": {
         "data": {
           "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/data.csv"
@@ -18,23 +18,18 @@
         "key": "Local Government Area",
         "fields": ["Total Number of Deaths"]
       }
-    },
-    {
-      "calculate": "(datum['Total Number of Deaths'] - 0) / (20 - 0)",
-      "as": "Normalised Deaths"
     }
   ],
   "mark": {"type": "geoshape"},
   "encoding": {
     "color": {
-      "field": "Normalised Deaths",
+      "field": "Total Number of Deaths",
       "type": "quantitative",
-      "scale": {"scheme": "reds"} 
+      "scale": {"scheme": "reds"}
     },
     "tooltip": [
-      {"field": "properties.NAME", "type": "nominal", "title": "Local Government Area"},
-      {"field": "Total Number of Deaths", "type": "quantitative"},
-      {"field": "Normalised Deaths", "type": "quantitative", "format": ".2f"}
+      {"field": "properties.LGA_NAME", "type": "nominal", "title": "LGA"},
+      {"field": "Total Number of Deaths", "type": "quantitative"}
     ]
   }
 }
