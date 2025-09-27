@@ -5,16 +5,21 @@
   <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.5.0"></script>
   <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.21.0"></script>
 </head>
-<body>
+<body style="font-family: Arial, Helvetica, sans-serif;">
+
   <div id="choropleth_map"></div>
+
+  <p style="font-size: 14px; color: #333; max-width: 800px;">
+    <strong>Note:</strong> Local government areas with no data are shown in white.
+  </p>
 
   <script type="text/javascript">
     var spec2 = {
       "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-      "title": "Total Deaths by Local Government Area",
+      "title": "Workplace Deaths per 100,000 by Local Government Area",
       "width": 800,
       "height": 600,
-      "background": "#b4d8fa",  // light blue map background
+      "background": "#cce6ff",
       "projection": {"type": "mercator"},
       "data": {
         "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/mapshaperoutput2.json",
@@ -28,37 +33,48 @@
               "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/data_clean.csv"
             },
             "key": "Local Government Area",
-            "fields": ["Total Number of Deaths"]
+            "fields": ["Total Number of Deaths", "Population"]
           }
         },
         {
-          "calculate": "datum['Total Number of Deaths'] == null ? -1 : datum['Total Number of Deaths']",
-          "as": "DeathsForColor"
+          "calculate": "datum['Total Number of Deaths'] == null || datum['Population'] == null ? -1 : round((datum['Total Number of Deaths'] / datum['Population']) * 100000 * 100) / 100",
+          "as": "DeathsPer100k"
         }
       ],
       "mark": {
         "type": "geoshape",
-        "stroke": "dark grey",
+        "stroke": "darkgrey",
         "strokeWidth": 0.5
       },
       "encoding": {
         "color": {
-          "field": "DeathsForColor",
+          "field": "DeathsPer100k",
           "type": "quantitative",
           "scale": {
-            "domain": [0, 1, 5, 10, 20, 30], // adjust based on your data range
+            "domain": [0, 5, 10, 20, 30, 40],
             "range": ["#fee5d9","#fcae91","#fb6a4a","#de2d26","#a50f15"],
             "nice": true
           },
-          "legend": {"title": "Total Deaths"},
+          "legend": {"title": "Deaths per 100,000"},
           "condition": {
-            "test": "datum['DeathsForColor'] == -1",
-            "value": "#FFFFFF" // dark blue for nulls
+            "test": "datum['DeathsPer100k'] == -1",
+            "value": "#FFFFFF"
           }
         },
         "tooltip": [
           {"field": "properties.LGA_NAME", "type": "nominal", "title": "Local Government Area"},
-          {"field": "Total Number of Deaths", "type": "quantitative"}
+          {
+            "field": "DeathsPer100k",
+            "type": "nominal",
+            "title": "Deaths per 100,000",
+            "calculate": "datum['DeathsPer100k'] == -1 ? 'NA' : datum['DeathsPer100k']"
+          },
+          {
+            "field": "Population",
+            "type": "nominal",
+            "title": "Population",
+            "calculate": "datum['DeathsPer100k'] == -1 ? 'NA' : format(datum['Population'], ',')"
+          }
         ]
       }
     };
