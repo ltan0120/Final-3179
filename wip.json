@@ -26,8 +26,11 @@
 
   "layer": [
     {
-      "data": {"graticule": {"step": [2, 2]}},
-      "mark": {"type": "geoshape", "stroke": "gray", "strokeWidth": 0.5}
+      "data": {
+        "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/mapshaperoutput2.json",
+        "format": {"type": "topojson", "feature": "LGA_POLYGON"}
+      },
+      "mark": {"type": "geoshape", "fill": "white", "stroke": "black", "strokeWidth": 0.5}
     },
     {
       "data": {
@@ -52,9 +55,7 @@
           "as": "DeathsPer100k"
         }
       ],
-
       "mark": {"type": "geoshape", "stroke": "black", "strokeWidth": 0.5},
-
       "encoding": {
         "shape": {"field": "geo", "type": "geojson"},
         "color": {
@@ -64,7 +65,7 @@
             "domain": [0, 5, 10, 20, 30, 40],
             "range": ["#fee5d9", "#fcae91", "#fb6a4a", "#de2d26", "#a50f15"]
           },
-          "legend": {"title": "Deaths per 100,000 individuals"},
+          "legend": {"title": "Deaths per 100,000"},
           "condition": {"test": "datum['DeathsPer100k'] == -1", "value": "#FFFFFF"}
         },
         "tooltip": [
