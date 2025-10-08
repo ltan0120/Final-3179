@@ -1,0 +1,91 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": "Total Number of Workplace Deaths by Local Government Area in Victoria 2016-2024",
+  "width": 800,
+  "height": 600,
+  "background": "#cce6ff",
+  "projection": {
+    "type": "mercator",
+    "center": [144.5, -37.0],
+    "scale": 4000,
+    "translate": [400, 300]
+  },
+  "layer": [
+    {
+      // Graticule Layer
+      "data": {"graticule": {"step": [2, 2]}},
+      "mark": {
+        "type": "geoshape",
+        "stroke": "gray",
+        "strokeWidth": 0.5
+      }
+    },
+    {
+      // Choropleth Layer
+      "data": {
+        "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/mapshaperoutput2.json",
+        "format": {"type": "topojson", "feature": "LGA_POLYGON"}
+      },
+      "transform": [
+        {
+          "lookup": "properties.LGA_NAME",
+          "from": {
+            "data": {
+              "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/Data cleaned with Year.csv"
+            },
+            "key": "LGA",
+            "fields": [
+              "Total Number of Deaths",
+              "Population",
+              "Number of Deaths Per 100,000"
+            ]
+          }
+        },
+        {
+          "calculate": "isValid(datum['Number of Deaths Per 100,000']) ? datum['Number of Deaths Per 100,000'] : -1",
+          "as": "DeathsPer100k"
+        }
+      ],
+      "mark": {
+        "type": "geoshape",
+        "stroke": "black",
+        "strokeWidth": 0.5
+      },
+      "encoding": {
+        "color": {
+          "field": "DeathsPer100k",
+          "type": "quantitative",
+          "scale": {
+            "domain": [0, 5, 10, 20, 30, 40],
+            "range": ["#fee5d9", "#fcae91", "#fb6a4a", "#de2d26", "#a50f15"],
+            "nice": true
+          },
+          "legend": {"title": "Deaths per 100,000 individuals"},
+          "condition": {
+            "test": "datum['DeathsPer100k'] == -1",
+            "value": "#FFFFFF"
+          }
+        },
+        "tooltip": [
+          {
+            "field": "properties.LGA_NAME",
+            "type": "nominal",
+            "title": "Local Government Area"
+          },
+          {
+            "field": "DeathsPer100k",
+            "type": "quantitative",
+            "title": "Deaths per 100,000",
+            "format": ".2f"
+          },
+          {
+            "field": "Population",
+            "type": "quantitative",
+            "title": "Population",
+            "format": ","
+          }
+        ]
+      }
+    }
+  ]
+}
