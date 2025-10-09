@@ -1,0 +1,128 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": "",
+  "titleFontSize": 24,
+  "titleFontWeight": "bold",
+  "params": [
+    {
+      "name": "year_selection",
+      "value": 2018,
+      "bind": {
+        "input": "select",
+        "options": [2018, 2019, 2020, 2021, 2022],
+        "name": "Select Year: "
+      }
+    }
+  ],
+  "hconcat": [
+    {
+      "title": "Proportion of Total Workplace Claims by Industry",
+      "width": 400,
+      "height": 410,
+      "background": "#ffffff",
+      "data": {
+        "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/Workplace%20Claims%20per%20year.csv"
+      },
+      "transform": [
+        {"aggregate": [{"op": "sum", "field": "Total Number of Claims", "as": "TotalClaims"}], "groupby": ["Year", "Industry"]},
+        {"filter": "datum.Year == year_selection"},
+        {"joinaggregate": [{"op": "sum", "field": "TotalClaims", "as": "TotalAll"}], "groupby": ["Year"]},
+        {"calculate": "datum.TotalClaims / datum.TotalAll", "as": "Percentage"}
+      ],
+      "mark": {"type": "arc", "outerRadius": 150},
+      "encoding": {
+        "theta": {"field": "Percentage", "type": "quantitative", "stack": true},
+        "color": {
+          "field": "Industry",
+          "type": "nominal",
+          "legend": {
+            "title": "Industry",
+            "orient": "bottom",
+            "labelLimit": 200,
+            "columns": 2,
+            "symbolSize": 80
+          },
+          "scale": {"scheme": "category20"}
+        },
+        "tooltip": [
+          {"field": "Industry", "title": "Industry"},
+          {"field": "TotalClaims", "title": "Total Number of Claims"},
+          {"field": "Percentage", "title": "% of Total claims", "format": ".1%"}
+        ]
+      }
+    },
+    {
+      "title": "Total Number of Workplace Deaths by LGA (2018–2022)",
+      "width": 700,
+      "height": 40,
+      "view": {
+        "stroke": "lightgray",
+        "strokeWidth": 1.5,
+        "fill": "#cce6ff"
+      },
+      "projection": {
+        "type": "mercator",
+        "center": [145.2, -37.1],
+        "scale": 3450,
+        "translate": [350, 250]
+      },
+      "layer": [
+        {
+          "data": {"graticule": {"step": [2, 2]}},
+          "mark": {"type": "geoshape", "stroke": "gray", "strokeWidth": 0.2}
+        },
+        {
+          "data": {
+            "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/mapshaperoutput2.json",
+            "format": {"type": "topojson", "feature": "LGA_POLYGON"}
+          },
+          "mark": {"type": "geoshape", "fill": "WHITE", "stroke": "BLACK", "strokeWidth": 0.5}
+        },
+        {
+          "data": {
+            "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/Data%20cleaned%20with%20Year.csv"
+          },
+          "transform": [
+            {"filter": "datum.Year == year_selection"},
+            {
+              "lookup": "LGA",
+              "from": {
+                "data": {
+                  "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/mapshaperoutput2.json",
+                  "format": {"type": "topojson", "feature": "LGA_POLYGON"}
+                },
+                "key": "properties.LGA_NAME",
+                "fields": ["geometry"]
+              },
+              "as": ["geo"]
+            },
+            {
+              "calculate": "isValid(datum['Number of Deaths Per 100,000']) ? datum['Number of Deaths Per 100,000'] : -1",
+              "as": "DeathsPer100k"
+            }
+          ],
+          "mark": {"type": "geoshape", "stroke": "BLACK", "strokeWidth": 0.5},
+          "encoding": {
+            "shape": {"field": "geo", "type": "geojson"},
+            "color": {
+              "field": "DeathsPer100k",
+              "type": "quantitative",
+              "scale": {
+                "domain": [2, 5, 7.5, 10, 15, 20, 25],
+                "range": ["#fcae91", "#fb6a4a", "#ef3b2c", "#cb181d", "#99000d", "69030b"]
+              },
+              "legend": {"title": "Deaths per 100,000"},
+              "condition": {"test": "datum['DeathsPer100k'] == -1", "value": "#FFFFFF"}
+            },
+            "tooltip": [
+              {"field": "LGA", "type": "nominal", "title": "Local Government Area"},
+              {"field": "DeathsPer100k", "type": "quantitative", "title": "Deaths per 100,000", "format": ".2f"},
+              {"field": "Population", "type": "quantitative", "title": "Population", "format": ","},
+              {"field": "Year", "type": "ordinal", "title": "Year"}
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
