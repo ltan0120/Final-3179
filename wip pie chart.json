@@ -3,8 +3,7 @@
   "title": "Proportion of Total Workplace Claims by Industry",
   "width": 400,
   "height": 400,
-  "background": "#f0f8ff",
-  "autosize": {"type": "pad", "contains": "content"}, 
+  "background": "#ffffff", 
 
   "data": {
     "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/Workplace%20Claims%20per%20year.csv"
@@ -68,10 +67,10 @@
     },
     "tooltip": [
       {"field": "Industry", "title": "Industry"},
-      {"field": "TotalClaims", "title": "Total Claims"},
+      {"field": "TotalClaims", "title": "Total Number of Claims"},
       {
         "field": "Percentage",
-        "title": "Share of Year",
+        "title": "% of Total claims",
         "format": ".1%"
       }
     ]
