@@ -1,0 +1,74 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": "Proportion of Total Workplace Claims by Industry",
+  "width": 400,
+  "height": 400,
+  "background": "#f0f8ff",
+
+  "data": {
+    "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/Workplace%20Claims%20per%20year.csv"
+  },
+
+  "params": [
+    {
+      "name": "year_selection",
+      "value": 2018,
+      "bind": {
+        "input": "select",
+        "options": [2018, 2019, 2020, 2021, 2022],
+        "name": "Select Year: "
+      }
+    }
+  ],
+
+  "transform": [
+    {
+      "aggregate": [
+        {"op": "sum", "field": "Total Number of Claims", "as": "TotalClaims"}
+      ],
+      "groupby": ["Year", "Industry"]
+    },
+    {
+      "filter": "datum.Year == year_selection"
+    },
+    {
+      "joinaggregate": [
+        {"op": "sum", "field": "TotalClaims", "as": "TotalAll"}
+      ],
+      "groupby": ["Year"]
+    },
+    {
+      "calculate": "datum.TotalClaims / datum.TotalAll",
+      "as": "Percentage"
+    }
+  ],
+
+  "mark": {"type": "arc", "outerRadius": 150},
+
+  "encoding": {
+    "theta": {
+      "field": "Percentage",
+      "type": "quantitative",
+      "stack": true
+    },
+    "color": {
+      "field": "Industry",
+      "type": "nominal",
+      "legend": {"title": "Industry"},
+      "scale": {
+        "scheme": "category20b"
+      }
+    },
+    "tooltip": [
+      {"field": "Industry", "title": "Industry"},
+      {"field": "TotalClaims", "title": "Total Claims"},
+      {
+        "field": "Percentage",
+        "title": "Share of Year",
+        "format": ".1%"
+      }
+    ]
+  },
+
+  "view": {"stroke": null}
+}
