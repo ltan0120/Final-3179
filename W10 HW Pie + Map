@@ -1,8 +1,6 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "title": "",
-  "titleFontSize": 24,
-  "titleFontWeight": "bold",
   "params": [
     {
       "name": "year_selection",
@@ -33,7 +31,12 @@
         {"joinaggregate": [{"op": "sum", "field": "TotalClaims", "as": "TotalAll"}], "groupby": ["Year"]},
         {"calculate": "datum.TotalClaims / datum.TotalAll", "as": "Percentage"}
       ],
-      "mark": {"type": "arc", "outerRadius": 150},
+      "mark": {
+        "type": "arc",
+        "outerRadius": 150,
+        "stroke": "black",
+        "strokeWidth": 0.4
+      },
       "encoding": {
         "theta": {"field": "Percentage", "type": "quantitative", "stack": true},
         "color": {
