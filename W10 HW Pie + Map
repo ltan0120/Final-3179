@@ -61,7 +61,7 @@
             "strokeWidth": {"condition": {"test": "datum.rank == 1", "value": 3}, "value": 0.4},
             "tooltip": [
               {"field": "Industry", "title": "Industry"},
-              {"field": "TotalClaims", "title": "Total Number of Claims"},
+              {"field": "TotalClaims", "title": "Total Number of Claims", "format": ",d"},
               {"field": "Percentage", "title": "% of Total claims", "format": ".1%"}
             ]
           }
@@ -144,7 +144,7 @@
     },
     {"filter": "datum.rank == 1"},
     {
-      "calculate": "datum['LGA'] + ' has the highest death rate at ' + format(datum['DeathsPer100k'], '.2f') + '%'",
+      "calculate": "datum['LGA'] + ' has the highest death rate: ' + format(datum['DeathsPer100k'], '.2f')",
       "as": "label"
     }
   ],
