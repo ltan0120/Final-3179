@@ -42,64 +42,34 @@
           "sort": [{"field": "Percentage", "order": "descending"}]
         },
         {
-      "calculate": "datum.Industry + ' has the highest number of claims at ' + format(datum.Percentage, '.1%')",
-      "as": "label"
-    }
+          "calculate": "datum.Industry + ' has the highest & of claims at ' + format(datum.Percentage, '.1%')",
+          "as": "label"
+        }
       ],
       "layer": [
         {
           "mark": {"type": "arc", "stroke": "black"},
           "encoding": {
-            "theta": {
-              "field": "Percentage",
-              "type": "quantitative",
-              "stack": true
-            },
+            "theta": {"field": "Percentage", "type": "quantitative", "stack": true},
             "color": {
               "field": "Industry",
               "type": "nominal",
-              "legend": {
-                "title": "Industry",
-                "orient": "bottom",
-                "labelLimit": 200,
-                "columns": 2,
-                "symbolSize": 80
-              },
+              "legend": {"title": "Industry", "orient": "bottom", "labelLimit": 200, "columns": 2, "symbolSize": 80},
               "scale": {"scheme": "category20"}
             },
-            "radius": {
-              "condition": {"test": "datum.rank == 1", "value": 150},
-              "value": 150
-            },
-            "strokeWidth": {
-              "condition": {"test": "datum.rank == 1", "value": 3},
-              "value": 0.4
-            },
+            "radius": {"condition": {"test": "datum.rank == 1", "value": 150}, "value": 150},
+            "strokeWidth": {"condition": {"test": "datum.rank == 1", "value": 3}, "value": 0.4},
             "tooltip": [
               {"field": "Industry", "title": "Industry"},
               {"field": "TotalClaims", "title": "Total Number of Claims"},
-              {
-                "field": "Percentage",
-                "title": "% of Total claims",
-                "format": ".1%"
-              }
+              {"field": "Percentage", "title": "% of Total claims", "format": ".1%"}
             ]
           }
         },
         {
           "transform": [{"filter": "datum.rank == 1"}],
-          "mark": {
-            "type": "text",
-            "x": 270,
-            "y": 365,
-            "fontSize": 10,
-            "fontWeight": "normal",
-            "color": "black",
-            "align": "center"
-          },
-          "encoding": {
-            "text": {"field": "label"}
-          }
+          "mark": {"type": "text", "x": 230, "y": 370, "fontSize": 11, "fontWeight": "bold", "color": "black", "align": "center"},
+          "encoding": {"text": {"field": "label"}}
         }
       ]
     },
@@ -107,17 +77,8 @@
       "title": "Total Number of Workplace Deaths by LGA (2018–2022)",
       "width": 600,
       "height": 400,
-      "view": {
-        "stroke": "lightgray",
-        "strokeWidth": 1.5,
-        "fill": "#cce6ff"
-      },
-      "projection": {
-        "type": "mercator",
-        "center": [146, -37.2],
-        "scale": 3300,
-        "translate": [350, 250]
-      },
+      "view": {"stroke": "lightgray", "strokeWidth": 1.5, "fill": "#cce6ff"},
+      "projection": {"type": "mercator", "center": [146, -37.2], "scale": 3300, "translate": [350, 250]},
       "layer": [
         {
           "data": {"graticule": {"step": [2, 2]}},
@@ -128,12 +89,7 @@
             "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/mapshaperoutput2.json",
             "format": {"type": "topojson", "feature": "LGA_POLYGON"}
           },
-          "mark": {
-            "type": "geoshape",
-            "fill": "WHITE",
-            "stroke": "BLACK",
-            "strokeWidth": 0.5
-          }
+          "mark": {"type": "geoshape", "fill": "WHITE", "stroke": "BLACK", "strokeWidth": 0.5}
         },
         {
           "data": {
@@ -152,53 +108,61 @@
                 "fields": ["geometry"]
               },
               "as": ["geo"]
-            },
-            {
-              "calculate": "isValid(datum['Number of Deaths Per 100,000']) ? datum['Number of Deaths Per 100,000'] : -1",
-              "as": "DeathsPer100k"
             }
           ],
           "mark": {"type": "geoshape", "stroke": "BLACK", "strokeWidth": 0.5},
           "encoding": {
             "shape": {"field": "geo", "type": "geojson"},
             "color": {
-              "field": "DeathsPer100k",
+              "field": "Number of Deaths Per 100,000",
               "type": "quantitative",
               "scale": {
                 "domain": [2, 5, 7.5, 10, 15, 20, 25],
-                "range": [
-                  "#fcae91",
-                  "#fb6a4a",
-                  "#ef3b2c",
-                  "#cb181d",
-                  "#99000d",
-                  "69030b"
-                ]
+                "range": ["#fcae91", "#fb6a4a", "#ef3b2c", "#cb181d", "#99000d", "69030b"]
               },
               "legend": {"title": "Deaths per 100,000"},
-              "condition": {
-                "test": "datum['DeathsPer100k'] == -1",
-                "value": "#FFFFFF"
-              }
+              "condition": {"test": "datum['Number of Deaths Per 100,000'] == null", "value": "#FFFFFF"}
             },
             "tooltip": [
               {"field": "LGA", "type": "nominal", "title": "Local Government Area"},
-              {
-                "field": "DeathsPer100k",
-                "type": "quantitative",
-                "title": "Deaths per 100,000",
-                "format": ".2f"
-              },
-              {
-                "field": "Population",
-                "type": "quantitative",
-                "title": "Population",
-                "format": ","
-              },
+              {"field": "Number of Deaths Per 100,000", "type": "quantitative", "title": "Deaths per 100,000", "format": ".2f"},
+              {"field": "Population", "type": "quantitative", "title": "Population", "format": ","},
               {"field": "Year", "type": "ordinal", "title": "Year"}
             ]
           }
-        }
+        },
+        {
+  "data": {
+    "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/Data%20cleaned%20with%20Year.csv"
+  },
+  "transform": [
+    {"filter": "datum.Year == year_selection"},
+    {"calculate": "toNumber(datum['Number of Deaths Per 100,000'])", "as": "DeathsPer100k"},
+    {
+      "window": [{"op": "rank", "as": "rank"}],
+      "sort": [{"field": "DeathsPer100k", "order": "descending"}]
+    },
+    {"filter": "datum.rank == 1"},
+    {
+      "calculate": "datum['LGA'] + ' has the highest death rate at ' + format(datum['DeathsPer100k'], '.2f') + '%'",
+      "as": "label"
+    }
+  ],
+  "mark": {
+    "type": "text",
+    "x": 400,
+    "y": 100,
+    "fontSize": 11,
+    "fontWeight": "bold",
+    "color": "black",
+    "align": "center"
+  },
+  "encoding": {
+    "text": {"field": "label", "type": "nominal"}
+  }
+}
+
+
       ]
     }
   ]
