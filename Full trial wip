@@ -107,6 +107,12 @@
     /* ------------------ NEW CHART: Injuries by Body Region ------------------ */
     const spec3 = {
       "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+      "title": {
+            "text": "Workplace Injuries by Body Region",
+            "anchor": "middle",
+            "fontSize": 18,
+            "fontWeight": "bold"
+          },
       "width": 540,
       "height": 600,
       "config": {"view": {"stroke": "transparent"}},
