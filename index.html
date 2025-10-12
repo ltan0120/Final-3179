@@ -55,7 +55,7 @@
             {"joinaggregate": [{"op": "sum", "field": "TotalClaims", "as": "TotalAll"}], "groupby": ["Year"]},
             {"calculate": "datum.TotalClaims / datum.TotalAll", "as": "Percentage"},
             {"window": [{"op": "rank", "as": "rank"}], "sort": [{"field": "Percentage", "order": "descending"}]},
-            {"calculate": "datum.Industry + ' has the highest & of claims at ' + format(datum.Percentage, '.1%')", "as": "label"}
+            {"calculate": "datum.Industry + ' has the highest % of claims at ' + format(datum.Percentage, '.1%')", "as": "label"}
           ],
           "layer": [
             {
