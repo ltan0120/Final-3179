@@ -71,11 +71,25 @@
 <body>
   <h2>The Price of A Day's Work</h2>
 
+  <div class="description-box">
+    <p>
+      This visualization uncovers the human stories behind workplace injury and fatality data from 2018–2022. 
+      It highlights who is most at risk and which workplaces are the most dangerous, with the goal of driving stronger safety practices, 
+      and to make our days at work, safe for everyone
+    </p>
+  </div>
+
+  <div class="divider"></div>
+
   <!-- New Injuries by Body Region Chart -->
   <div id="vis3"></div>
 
+  <div class="divider"></div>
+
   <!-- Top Chart -->
   <div id="vis2"></div>
+
+  <div class="divider"></div>
 
   <div class="description-box">
     <p>
@@ -85,8 +99,6 @@
       Use the dropdown below to explore different years.
     </p>
   </div>
-
-  <div class="divider"></div>
 
   <!-- Bottom Chart -->
   <div id="vis"></div>
