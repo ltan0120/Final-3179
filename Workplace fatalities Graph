@@ -1,0 +1,137 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "title": {
+    "text": "Workplace Fatalities by Gender and Age Group",
+    "anchor": "middle",
+    "fontSize": 20,
+    "fontWeight": "bold"
+  },
+  "width": 250,
+  "height": 300,
+  "data": {
+    "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/Number%20of%20deaths%20MvF.csv"
+  },
+  "params": [
+    {
+      "name": "year_selection",
+      "value": 2018,
+      "bind": {
+        "input": "select",
+        "options": [2018, 2019, 2020, 2021, 2022],
+        "name": "Select Year: "
+      }
+    }
+  ],
+  "transform": [{"filter": "datum.Year == year_selection"}],
+  "vconcat": [
+    {
+      "hconcat": [
+        {
+          "mark": {"type": "image", "width": 40, "height": 40},
+          "encoding": {
+            "url": {"value": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/female%20icon.png"},
+            "x": {"value": 150},
+            "y": {"value": 25}
+          }
+        },
+        {"mark": {"type": "text", "text": " "}, "encoding": {}},
+        {
+          "mark": {"type": "image", "width": 40, "height": 40},
+          "encoding": {
+            "url": {"value": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/male%20icon.png"},
+            "x": {"value": 300},
+            "y": {"value": 25}
+          }
+        }
+      ]
+    },
+    {
+      "hconcat": [
+        {
+          "transform": [
+            {"filter": "datum.Gender == 'Female'"},
+            {"calculate": "-datum['Number of Fatalities']", "as": "fatalities"}
+          ],
+          "title": "Female",
+          "mark": "bar",
+          "encoding": {
+            "y": {
+              "field": "Age",
+              "type": "ordinal",
+              "sort": ["15 - 24", "25 - 34", "35 - 44", "45 - 54", "55 - 64", "65 - 74", "75 +"],
+              "axis": null
+            },
+            "x": {
+              "aggregate": "sum",
+              "field": "fatalities",
+              "title": "Number of Fatalities",
+              "scale": {"domain": [-22, 0]},
+              "axis": {
+                "format": "d",
+                "labelExpr": "abs(datum.value)"
+              }
+            },
+            "color": {
+              "field": "Gender",
+              "scale": {"range": ["#e377c2", "#1f77b4"]},
+              "legend": null
+            },
+            "tooltip": [
+              {"field": "Age"},
+              {"field": "Number of Fatalities"},
+              {"field": "Gender"}
+            ]
+          }
+        },
+        {
+          "width": 25,
+          "view": {"stroke": null},
+          "mark": {"type": "text", "align": "center"},
+          "encoding": {
+            "y": {
+              "field": "Age",
+              "type": "ordinal",
+              "sort": ["15 - 24", "25 - 34", "35 - 44", "45 - 54", "55 - 64", "65 - 74", "75 +"],
+              "axis": null
+            },
+            "text": {"field": "Age"}
+          }
+        },
+        {
+          "transform": [{"filter": "datum.Gender == 'Male'"}],
+          "title": "Male",
+          "mark": "bar",
+          "encoding": {
+            "y": {
+              "field": "Age",
+              "type": "ordinal",
+              "sort": ["15 - 24", "25 - 34", "35 - 44", "45 - 54", "55 - 64", "65 - 74", "75 +"],
+              "axis": null
+            },
+            "x": {
+              "aggregate": "sum",
+              "field": "Number of Fatalities",
+              "title": "Number of Fatalities",
+              "scale": {"domain": [0, 22]},
+              "axis": {"format": "d"}
+            },
+            "color": {
+              "field": "Gender",
+              "scale": {"range": ["#e377c2", "#1f77b4"]},
+              "legend": null
+            },
+            "tooltip": [
+              {"field": "Age"},
+              {"field": "Number of Fatalities"},
+              {"field": "Gender"}
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "config": {
+    "view": {"stroke": null},
+    "axis": {"grid": false}
+  }
+}
