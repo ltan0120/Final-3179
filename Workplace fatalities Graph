@@ -27,20 +27,20 @@
     {
       "hconcat": [
         {
-          "mark": {"type": "image", "width": 40, "height": 40},
+          "mark": {"type": "image", "width": 50, "height": 50},
           "encoding": {
             "url": {"value": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/female%20icon.png"},
             "x": {"value": 150},
-            "y": {"value": 25}
+            "y": {"value": 35}
           }
         },
         {"mark": {"type": "text", "text": " "}, "encoding": {}},
         {
-          "mark": {"type": "image", "width": 40, "height": 40},
+          "mark": {"type": "image", "width": 50, "height": 50},
           "encoding": {
             "url": {"value": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/male%20icon.png"},
-            "x": {"value": 300},
-            "y": {"value": 25}
+            "x": {"value": 293},
+            "y": {"value": 35}
           }
         }
       ]
