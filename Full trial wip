@@ -46,11 +46,8 @@
       margin: 25px 0;
     }
 
-    #vis {
+    #vis2, #vis {
       margin: 15px auto;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       background-color: #ffffff;
       border-radius: 8px;
       box-shadow: 0 0 6px rgba(0,0,0,0.1);
@@ -59,19 +56,23 @@
       max-width: 1300px;
     }
 
-    #vis2 {
+    #vis3 {
       margin: 15px auto;
       background-color: #ffffff;
       border-radius: 8px;
       box-shadow: 0 0 6px rgba(0,0,0,0.1);
       padding: 10px;
       width: 100%;
-      max-width: 1300px;
+      max-width: 700px;
     }
+
   </style>
 </head>
 <body>
   <h2>The Price of A Day's Work</h2>
+
+  <!-- New Injuries by Body Region Chart -->
+  <div id="vis3"></div>
 
   <!-- Top Chart -->
   <div id="vis2"></div>
@@ -91,6 +92,87 @@
   <div id="vis"></div>
 
   <script>
+    /* ------------------ NEW CHART: Injuries by Body Region ------------------ */
+    const spec3 = {
+      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+      "width": 540,
+      "height": 600,
+      "config": {"view": {"stroke": "transparent"}},
+      "params": [
+        {
+          "name": "year_selection_body",
+          "value": 2022,
+          "bind": {
+            "input": "select",
+            "options": [2018, 2019, 2020, 2021, 2022],
+            "name": "Select Year: "
+          }
+        }
+      ],
+      "layer": [
+        {
+          "data": {"values": [{"x": 800, "y": 0}]},
+          "mark": {
+            "type": "image",
+            "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/Your%20paragraph%20text%20(1250%20x%206300%20px)%20(1400%20x%202000%20px).png",
+            "width": 700,
+            "height": 800,
+            "xOffset": -350,
+            "yOffset": -300
+          },
+          "encoding": {
+            "x": {"field": "x", "type": "quantitative", "scale": {"domain": [0,700]}},
+            "y": {"field": "y", "type": "quantitative", "scale": {"domain": [0,800]}}
+          }
+        },
+        {
+          "data": {
+            "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/Bodily%20Location%20Data%20Set.csv"
+          },
+          "transform": [
+            {"filter": "datum.Year == year_selection_body"},
+            {"calculate": "replace(datum['% of Year Total'], '%', '')", "as": "PercentageValue"},
+            {"calculate": "datum['PercentageValue'] + '%'", "as": "DisplayPercentage"},
+            {
+              "calculate": "datum['Body Location'] == 'Cranium' ? 250 : " +
+                           "datum['Body Location'] == 'Neck' ? 610 : " +
+                           "datum['Body Location'] == 'Shoulder' ? 160 : " +
+                           "datum['Body Location'] == 'Back - Upper Or Lower' ? 660 : " +
+                           "datum['Body Location'] == 'Hand And Wrist' ? 400 : " +
+                           "datum['Body Location'] == 'Knee' ? 634 : " +
+                           "datum['Body Location'] == 'Foot And Ankle' ? 254 : 0",
+              "as": "x"
+            },
+            {
+              "calculate": "datum['Body Location'] == 'Cranium' ? 812 : " +
+                           "datum['Body Location'] == 'Neck' ? 700 : " +
+                           "datum['Body Location'] == 'Shoulder' ? 643 : " +
+                           "datum['Body Location'] == 'Back - Upper Or Lower' ? 550 : " +
+                           "datum['Body Location'] == 'Hand And Wrist' ? 400 : " +
+                           "datum['Body Location'] == 'Knee' ? 223 : " +
+                           "datum['Body Location'] == 'Foot And Ankle' ? 53 : 0",
+              "as": "y"
+            }
+          ],
+          "mark": {
+            "type": "text",
+            "fontSize": 18,
+            "color": "#d62828",
+            "fontWeight": "bold"
+          },
+          "encoding": {
+            "x": {"field": "x", "type": "quantitative"},
+            "y": {"field": "y", "type": "quantitative"},
+            "text": {"field": "DisplayPercentage"},
+            "tooltip": [
+              {"field": "Body Location", "title": "Body Part"},
+              {"field": "DisplayPercentage", "title": "% of Total Yearly Injuries"}
+            ]
+          }
+        }
+      ]
+    };
+
     /* ------------------ TOP CHART: Fatalities + Injury Heatmap ------------------ */
     const spec2 = {
       "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
@@ -99,7 +181,7 @@
       "height": 400,
       "params": [
         {
-          "name": "year_selection2",
+          "name": "year_selection_top",
           "value": 2018,
           "bind": {
             "input": "select",
@@ -113,7 +195,6 @@
           "title": {
             "text": "Workplace Fatalities by Gender and Age Group",
             "anchor": "middle",
-            "fontSize": 18,
             "fontWeight": "bold"
           },
           "width": 700,
@@ -121,11 +202,10 @@
           "data": {
             "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/Number%20of%20deaths%20MvF.csv"
           },
-          "transform": [{"filter": "datum.Year == year_selection2"}],
+          "transform": [{"filter": "datum.Year == year_selection_top"}],
           "vconcat": [
             {
               "layer": [
-                // Female icon and label
                 {
                   "mark": {"type": "image", "width": 50, "height": 50},
                   "encoding": {
@@ -142,7 +222,6 @@
                     "color": {"value": "#e377c2"}
                   }
                 },
-                // Male icon and label
                 {
                   "mark": {"type": "image", "width": 50, "height": 50},
                   "encoding": {
@@ -163,7 +242,6 @@
             },
             {
               "hconcat": [
-                // Female bars
                 {
                   "width": 330,
                   "transform": [
@@ -180,7 +258,6 @@
                         "tooltip":[{"field":"Age"},{"field":"Number of Fatalities"},{"field":"Gender"}]
                       }
                     },
-                    // Annotation for highest female fatalities
                     {
                       "transform": [
                         {"window":[{"op":"rank","as":"rank"}],"sort":[{"field":"Number of Fatalities","order":"descending"}]},
@@ -188,14 +265,13 @@
                       ],
                       "mark": {"type": "text", "dy": -5, "fontSize": 12, "fontWeight": "bold", "color": "black", "align": "center"},
                       "encoding": {
-                        "x": {"aggregate": "sum","field": "fatalities"},
+                        "x": {"aggregate": "sum","field":"fatalities"},
                         "y": {"field": "Age"},
                         "text": {"field": "Number of Fatalities"}
                       }
                     }
                   ]
                 },
-                // Age labels
                 {
                   "width": 40,
                   "view": {"stroke": null},
@@ -205,7 +281,6 @@
                     "text":{"field":"Age"}
                   }
                 },
-                // Male bars
                 {
                   "width": 330,
                   "transform": [{"filter": "datum.Gender == 'Male'"}],
@@ -219,7 +294,6 @@
                         "tooltip":[{"field":"Age"},{"field":"Number of Fatalities"},{"field":"Gender"}]
                       }
                     },
-                    // Annotation for highest male fatalities
                     {
                       "transform": [
                         {"window":[{"op":"rank","as":"rank"}],"sort":[{"field":"Number of Fatalities","order":"descending"}]},
@@ -243,13 +317,12 @@
           "title": {
             "text": "Workplace Injuries Claims",
             "anchor": "middle",
-            "fontSize": 18,
             "fontWeight": "bold"
           },
           "width": 300,
           "height": 220,
           "data": {"url":"https://raw.githubusercontent.com/ltan0120/Final-3179/main/Number%20of%20workplace%20Claims%20-%20Heatmap.csv"},
-          "transform": [{"filter":"datum.Year == year_selection2"}],
+          "transform": [{"filter":"datum.Year == year_selection_top"}],
           "mark":"rect",
           "encoding": {
             "x":{"field":"Age","type":"ordinal","title":"Age Group","axis":{"labelAngle":0}},
@@ -353,7 +426,8 @@
       ]
     };
 
-    // Embed charts
+    /* ------------------ EMBED ALL CHARTS ------------------ */
+    vegaEmbed('#vis3', spec3, {actions: false});
     vegaEmbed('#vis2', spec2, {actions: true});
     vegaEmbed('#vis', spec, {actions: true});
   </script>
