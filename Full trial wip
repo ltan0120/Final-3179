@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Workplace Injury Claims & Deaths Visualization</title>
+  <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@7"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 30px;
+      background-color: #ffffff; /* White background */
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333333;
+    }
+
+    .description-box {
+      background-color: #f9f9f9;
+      border: 1px solid #dddddd;
+      border-radius: 8px;
+      padding: 15px 20px;
+      width: 90%;
+      max-width: 1100px;
+      text-align: center;
+      font-size: 15px;
+      color: #444444;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      line-height: 1.6;
+    }
+
+    .divider {
+      width: 80%;
+      max-width: 1100px;
+      height: 1px;
+      background-color: #cccccc;
+      margin: 25px 0;
+    }
+
+    #vis {
+      margin: auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #ffffff; /* Match chart background */
+      border-radius: 8px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.1);
+      padding: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h2>The Price of A Day's Work</h2>
+
+  <div class="description-box">
+    <p>
+      This dashboard visualizes key insights from workplace injury and fatality data between <strong>2018–2022</strong>.  
+      The left chart shows the proportion of injury claims across industries, while the right map highlights regional  
+      differences in workplace death rates across Local Government Areas (LGAs).  
+      Use the dropdown below to explore different years.
+    </p>
+  </div>
+
+  <div class="divider"></div>
+
+  <div id="vis"></div>
+
+  <script>
+    const spec = {
+      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+      "title": "",
+      "params": [
+        {
+          "name": "year_selection",
+          "value": 2018,
+          "bind": {
+            "input": "select",
+            "options": [2018, 2019, 2020, 2021, 2022],
+            "name": "Select Year: "
+          }
+        }
+      ],
+      "hconcat": [
+        {
+          "title": "Proportion of Total Workplace Injury Claims by Industry",
+          "width": 450,
+          "height": 400,
+          "background": "#ffffff",
+          "view": {"stroke": "lightgray", "strokeWidth": 1.5},
+          "data": {
+            "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/Workplace%20Claims%20per%20year.csv"
+          },
+          "transform": [
+            {
+              "aggregate": [{"op": "sum", "field": "Total Number of Claims", "as": "TotalClaims"}],
+              "groupby": ["Year", "Industry"]
+            },
+            {"filter": "datum.Year == year_selection"},
+            {"joinaggregate": [{"op": "sum", "field": "TotalClaims", "as": "TotalAll"}], "groupby": ["Year"]},
+            {"calculate": "datum.TotalClaims / datum.TotalAll", "as": "Percentage"},
+            {"window": [{"op": "rank", "as": "rank"}], "sort": [{"field": "Percentage", "order": "descending"}]},
+            {"calculate": "datum.Industry + ' has the highest % of claims at ' + format(datum.Percentage, '.1%')", "as": "label"}
+          ],
+          "layer": [
+            {
+              "mark": {"type": "arc", "stroke": "black"},
+              "encoding": {
+                "theta": {"field": "Percentage", "type": "quantitative", "stack": true},
+                "color": {
+                  "field": "Industry",
+                  "type": "nominal",
+                  "legend": {"title": "Industry", "orient": "bottom", "labelLimit": 200, "columns": 2, "symbolSize": 80},
+                  "scale": {"scheme": "category20"}
+                },
+                "radius": {"condition": {"test": "datum.rank == 1", "value": 150}, "value": 150},
+                "strokeWidth": {"condition": {"test": "datum.rank == 1", "value": 3}, "value": 0.4},
+                "tooltip": [
+                  {"field": "Industry", "title": "Industry"},
+                  {"field": "TotalClaims", "title": "Total Number of Claims", "format": ",d"},
+                  {"field": "Percentage", "title": "% of Total claims", "format": ".1%"}
+                ]
+              }
+            },
+            {
+              "transform": [{"filter": "datum.rank == 1"}],
+              "mark": {"type": "text", "x": 230, "y": 370, "fontSize": 11, "fontWeight": "bold", "color": "black", "align": "center"},
+              "encoding": {"text": {"field": "label"}}
+            }
+          ]
+        },
+        {
+          "title": "Total Number of Workplace Deaths by LGA (2018–2022)",
+          "width": 600,
+          "height": 400,
+          "view": {"stroke": "lightgray", "strokeWidth": 1.5, "fill": "#ffffff"},
+          "projection": {"type": "mercator", "center": [146, -37.2], "scale": 3300, "translate": [350, 250]},
+          "layer": [
+            {"data": {"graticule": {"step": [2,2]}}, "mark": {"type": "geoshape", "stroke": "gray", "strokeWidth": 0.2}},
+            {
+              "data": {
+                "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/mapshaperoutput2.json",
+                "format": {"type": "topojson", "feature": "LGA_POLYGON"}
+              },
+              "mark": {"type": "geoshape", "fill": "WHITE", "stroke": "BLACK", "strokeWidth": 0.5}
+            },
+            {
+              "data": {
+                "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/Data%20cleaned%20with%20Year.csv"
+              },
+              "transform": [
+                {"filter": "datum.Year == year_selection"},
+                {
+                  "lookup": "LGA",
+                  "from": {
+                    "data": {
+                      "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/mapshaperoutput2.json",
+                      "format": {"type": "topojson", "feature": "LGA_POLYGON"}
+                    },
+                    "key": "properties.LGA_NAME",
+                    "fields": ["geometry"]
+                  },
+                  "as": ["geo"]
+                }
+              ],
+              "mark": {"type": "geoshape", "stroke": "BLACK", "strokeWidth": 0.5},
+              "encoding": {
+                "shape": {"field": "geo", "type": "geojson"},
+                "color": {
+                  "field": "Number of Deaths Per 100,000",
+                  "type": "quantitative",
+                  "scale": {
+                    "domain": [2, 5, 7.5, 10, 15, 20, 25],
+                    "range": ["#fcae91", "#fb6a4a", "#ef3b2c", "#cb181d", "#99000d", "#69030b"]
+                  },
+                  "legend": {"title": "Deaths per 100,000"},
+                  "condition": {"test": "datum['Number of Deaths Per 100,000'] == null", "value": "#FFFFFF"}
+                },
+                "tooltip": [
+                  {"field": "LGA", "type": "nominal", "title": "Local Government Area"},
+                  {"field": "Number of Deaths Per 100,000", "type": "quantitative", "title": "Deaths per 100,000", "format": ".2f"},
+                  {"field": "Population", "type": "quantitative", "title": "Population", "format": ","},
+                  {"field": "Year", "type": "ordinal", "title": "Year"}
+                ]
+              }
+            },
+            {
+              "data": {
+                "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/Data%20cleaned%20with%20Year.csv"
+              },
+              "transform": [
+                {"filter": "datum.Year == year_selection"},
+                {"calculate": "toNumber(datum['Number of Deaths Per 100,000'])", "as": "DeathsPer100k"},
+                {"window": [{"op": "rank", "as": "rank"}], "sort": [{"field": "DeathsPer100k", "order": "descending"}]},
+                {"filter": "datum.rank == 1"},
+                {"calculate": "datum['LGA'] + ' highest deaths per 100k: ' + format(datum['DeathsPer100k'], '.2f')", "as": "label"}
+              ],
+              "mark": {"type": "text", "x": 400, "y": 100, "fontSize": 11, "fontWeight": "bold", "color": "black", "align": "center"},
+              "encoding": {"text": {"field": "label", "type": "nominal"}}
+            }
+          ]
+        }
+      ]
+    };
+
+    vegaEmbed('#vis', spec, {actions: true});
+  </script>
+</body>
+</html>
