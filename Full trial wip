@@ -11,11 +11,10 @@
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 30px;
-      background-color: #ffffff; /* White background */
+      background-color: #ffffff;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
     }
 
     h2 {
@@ -36,6 +35,7 @@
       color: #444444;
       box-shadow: 0 2px 6px rgba(0,0,0,0.05);
       line-height: 1.6;
+      margin-bottom: 20px;
     }
 
     .divider {
@@ -47,19 +47,34 @@
     }
 
     #vis {
-      margin: auto;
+      margin: 15px auto;
       display: flex;
       justify-content: center;
       align-items: center;
-      background-color: #ffffff; /* Match chart background */
+      background-color: #ffffff;
       border-radius: 8px;
       box-shadow: 0 0 6px rgba(0,0,0,0.1);
       padding: 10px;
+      width: 100%;
+      max-width: 1300px;
+    }
+
+    #vis2 {
+      margin: 15px auto;
+      background-color: #ffffff;
+      border-radius: 8px;
+      box-shadow: 0 0 6px rgba(0,0,0,0.1);
+      padding: 10px;
+      width: 100%;
+      max-width: 1200px;
     }
   </style>
 </head>
 <body>
   <h2>The Price of A Day's Work</h2>
+
+  <!-- Top Chart -->
+  <div id="vis2"></div>
 
   <div class="description-box">
     <p>
@@ -72,15 +87,153 @@
 
   <div class="divider"></div>
 
+  <!-- Bottom Chart -->
   <div id="vis"></div>
 
   <script>
+    /* ------------------ TOP CHART: Fatalities + Injury Heatmap ------------------ */
+    const spec2 = {
+      "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+      "title": "",
+      "width": 1000,
+      "height": 400,
+      "params": [
+        {
+          "name": "year_selection2",
+          "value": 2018,
+          "bind": {
+            "input": "select",
+            "options": [2018, 2019, 2020, 2021, 2022],
+            "name": "Select Year: "
+          }
+        }
+      ],
+      "hconcat": [
+        {
+          "title": {
+            "text": "Workplace Fatalities by Gender and Age Group",
+            "anchor": "middle",
+            "fontSize": 18,
+            "fontWeight": "bold"
+          },
+          "width": 500,
+          "height": 400,
+          "data": {
+            "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/Number%20of%20deaths%20MvF.csv"
+          },
+          "transform": [{"filter": "datum.Year == year_selection2"}],
+          "vconcat": [
+            {
+              "layer": [
+                // Female icon and label
+                {
+                  "mark": {"type": "image", "width": 50, "height": 50},
+                  "encoding": {
+                    "x": {"value": 100},
+                    "y": {"value": 35},
+                    "url": {"value": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/female%20icon.png"}
+                  }
+                },
+                {
+                  "mark": {"type": "text", "text": "Female", "align": "center", "fontWeight": "bold"},
+                  "encoding": {
+                    "x": {"value": 100},
+                    "y": {"value": 95},
+                    "color": {"value": "#e377c2"}
+                  }
+                },
+                // Male icon and label
+                {
+                  "mark": {"type": "image", "width": 50, "height": 50},
+                  "encoding": {
+                    "x": {"value": 365},
+                    "y": {"value": 35},
+                    "url": {"value": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/male%20icon.png"}
+                  }
+                },
+                {
+                  "mark": {"type": "text", "text": "Male", "align": "center", "fontWeight": "bold"},
+                  "encoding": {
+                    "x": {"value": 365},
+                    "y": {"value": 95},
+                    "color": {"value": "#1f77b4"}
+                  }
+                }
+              ]
+            },
+            {
+              "hconcat": [
+                // Female bars
+                {
+                  "transform": [
+                    {"filter": "datum.Gender == 'Female'"},
+                    {"calculate": "-datum['Number of Fatalities']", "as": "fatalities"}
+                  ],
+                  "mark": "bar",
+                  "encoding": {
+                    "y": {"field": "Age","type": "ordinal","sort": ["15 - 24","25 - 34","35 - 44","45 - 54","55 - 64","65 +"],"axis": null},
+                    "x": {"aggregate": "sum","field": "fatalities","title": "Number of Fatalities","scale":{"domain":[-22,0]},"axis":{"format":"d","labelExpr":"abs(datum.value)"}},
+                    "color": {"field": "Gender","scale":{"range":["#e377c2","#1f77b4"]},"legend": null},
+                    "tooltip":[{"field":"Age"},{"field":"Number of Fatalities"},{"field":"Gender"}]
+                  }
+                },
+                // Age labels
+                {
+                  "width": 25,
+                  "view": {"stroke": null},
+                  "mark": {"type": "text","align":"center"},
+                  "encoding": {
+                    "y":{"field":"Age","type":"ordinal","sort":["15 - 24","25 - 34","35 - 44","45 - 54","55 - 64","65 +"],"axis": null},
+                    "text":{"field":"Age"}
+                  }
+                },
+                // Male bars
+                {
+                  "transform": [{"filter": "datum.Gender == 'Male'"}],
+                  "mark": "bar",
+                  "encoding": {
+                    "y":{"field":"Age","type":"ordinal","sort":["15 - 24","25 - 34","35 - 44","45 - 54","55 - 64","65 - 74","75 +"],"axis": null},
+                    "x":{"aggregate":"sum","field":"Number of Fatalities","title":"Number of Fatalities","scale":{"domain":[0,22]},"axis":{"format":"d"}},
+                    "color":{"field":"Gender","scale":{"range":["#e377c2","#1f77b4"]},"legend": null},
+                    "tooltip":[{"field":"Age"},{"field":"Number of Fatalities"},{"field":"Gender"}]
+                  }
+                }
+              ]
+            }
+          ],
+          "config": {"view": {"stroke": null},"axis":{"grid": false}}
+        },
+        {
+          "title": {
+            "text": "Workplace Injuries Claims",
+            "anchor": "middle",
+            "fontSize": 18,
+            "fontWeight": "bold"
+          },
+          "width": 500,
+          "height": 220,
+          "data": {"url":"https://raw.githubusercontent.com/ltan0120/Final-3179/main/Number%20of%20workplace%20Claims%20-%20Heatmap.csv"},
+          "transform": [{"filter":"datum.Year == year_selection2"}],
+          "mark":"rect",
+          "encoding": {
+            "x":{"field":"Age","type":"ordinal","title":"Age Group","axis":{"labelAngle":0}},
+            "y":{"field":"Gender","type":"ordinal","title":"Gender"},
+            "color":{"field":"Number of Workplace Injury Claims","type":"quantitative","scale":{"scheme":"reds","domain":[0,4700]},"title":"Number of Claims"},
+            "tooltip":[{"field":"Gender","type":"nominal"},{"field":"Age","type":"nominal"},{"field":"Year","type":"ordinal"},{"field":"Number of Workplace Injury Claims","type":"quantitative","format":",","title":"Number of Claims"}]
+          },
+          "config":{"view":{"stroke":"transparent"},"axis":{"labelFontSize":12,"titleFontSize":14}}
+        }
+      ],
+      "config":{"view":{"stroke": null}}
+    };
+
+    /* ------------------ BOTTOM CHART: Pie + Map ------------------ */
     const spec = {
       "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
       "title": "",
       "params": [
         {
-          "name": "year_selection",
+          "name": "year_selection1",
           "value": 2018,
           "bind": {
             "input": "select",
@@ -96,44 +249,30 @@
           "height": 400,
           "background": "#ffffff",
           "view": {"stroke": "lightgray", "strokeWidth": 1.5},
-          "data": {
-            "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/Workplace%20Claims%20per%20year.csv"
-          },
+          "data": {"url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/Workplace%20Claims%20per%20year.csv"},
           "transform": [
-            {
-              "aggregate": [{"op": "sum", "field": "Total Number of Claims", "as": "TotalClaims"}],
-              "groupby": ["Year", "Industry"]
-            },
-            {"filter": "datum.Year == year_selection"},
-            {"joinaggregate": [{"op": "sum", "field": "TotalClaims", "as": "TotalAll"}], "groupby": ["Year"]},
-            {"calculate": "datum.TotalClaims / datum.TotalAll", "as": "Percentage"},
-            {"window": [{"op": "rank", "as": "rank"}], "sort": [{"field": "Percentage", "order": "descending"}]},
-            {"calculate": "datum.Industry + ' has the highest % of claims at ' + format(datum.Percentage, '.1%')", "as": "label"}
+            {"aggregate":[{"op":"sum","field":"Total Number of Claims","as":"TotalClaims"}],"groupby":["Year","Industry"]},
+            {"filter":"datum.Year == year_selection1"},
+            {"joinaggregate":[{"op":"sum","field":"TotalClaims","as":"TotalAll"}],"groupby":["Year"]},
+            {"calculate":"datum.TotalClaims / datum.TotalAll","as":"Percentage"},
+            {"window":[{"op":"rank","as":"rank"}],"sort":[{"field":"Percentage","order":"descending"}]},
+            {"calculate":"datum.Industry + ' has the highest % of claims at ' + format(datum.Percentage, '.1%')","as":"label"}
           ],
-          "layer": [
+          "layer":[
             {
-              "mark": {"type": "arc", "stroke": "black"},
-              "encoding": {
-                "theta": {"field": "Percentage", "type": "quantitative", "stack": true},
-                "color": {
-                  "field": "Industry",
-                  "type": "nominal",
-                  "legend": {"title": "Industry", "orient": "bottom", "labelLimit": 200, "columns": 2, "symbolSize": 80},
-                  "scale": {"scheme": "category20"}
-                },
-                "radius": {"condition": {"test": "datum.rank == 1", "value": 150}, "value": 150},
-                "strokeWidth": {"condition": {"test": "datum.rank == 1", "value": 3}, "value": 0.4},
-                "tooltip": [
-                  {"field": "Industry", "title": "Industry"},
-                  {"field": "TotalClaims", "title": "Total Number of Claims", "format": ",d"},
-                  {"field": "Percentage", "title": "% of Total claims", "format": ".1%"}
-                ]
+              "mark":{"type":"arc","stroke":"black"},
+              "encoding":{
+                "theta":{"field":"Percentage","type":"quantitative","stack":true},
+                "color":{"field":"Industry","type":"nominal","legend":{"title":"Industry","orient":"bottom","labelLimit":200,"columns":2,"symbolSize":80},"scale":{"scheme":"category20"}},
+                "radius":{"condition":{"test":"datum.rank == 1","value":150},"value":150},
+                "strokeWidth":{"condition":{"test":"datum.rank == 1","value":3},"value":0.4},
+                "tooltip":[{"field":"Industry","title":"Industry"},{"field":"TotalClaims","title":"Total Number of Claims","format":",d"},{"field":"Percentage","title":"% of Total claims","format":".1%"}]
               }
             },
             {
-              "transform": [{"filter": "datum.rank == 1"}],
-              "mark": {"type": "text", "x": 230, "y": 370, "fontSize": 11, "fontWeight": "bold", "color": "black", "align": "center"},
-              "encoding": {"text": {"field": "label"}}
+              "transform":[{"filter":"datum.rank == 1"}],
+              "mark":{"type":"text","x":230,"y":370,"fontSize":11,"fontWeight":"bold","color":"black","align":"center"},
+              "encoding":{"text":{"field":"label"}}
             }
           ]
         },
@@ -141,76 +280,45 @@
           "title": "Total Number of Workplace Deaths by LGA (2018–2022)",
           "width": 600,
           "height": 400,
-          "view": {"stroke": "lightgray", "strokeWidth": 1.5, "fill": "#ffffff"},
-          "projection": {"type": "mercator", "center": [146, -37.2], "scale": 3300, "translate": [350, 250]},
-          "layer": [
-            {"data": {"graticule": {"step": [2,2]}}, "mark": {"type": "geoshape", "stroke": "gray", "strokeWidth": 0.2}},
+          "view":{"stroke":"lightgray","strokeWidth":1.5,"fill":"#ffffff"},
+          "projection":{"type":"mercator","center":[146,-37.2],"scale":3300,"translate":[350,250]},
+          "layer":[
+            {"data":{"graticule":{"step":[2,2]}},"mark":{"type":"geoshape","stroke":"gray","strokeWidth":0.2}},
             {
-              "data": {
-                "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/mapshaperoutput2.json",
-                "format": {"type": "topojson", "feature": "LGA_POLYGON"}
-              },
-              "mark": {"type": "geoshape", "fill": "WHITE", "stroke": "BLACK", "strokeWidth": 0.5}
+              "data":{"url":"https://raw.githubusercontent.com/ltan0120/Final-3179/main/mapshaperoutput2.json","format":{"type":"topojson","feature":"LGA_POLYGON"}},"mark":{"type":"geoshape","fill":"WHITE","stroke":"BLACK","strokeWidth":0.5}
             },
             {
-              "data": {
-                "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/Data%20cleaned%20with%20Year.csv"
-              },
-              "transform": [
-                {"filter": "datum.Year == year_selection"},
-                {
-                  "lookup": "LGA",
-                  "from": {
-                    "data": {
-                      "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/mapshaperoutput2.json",
-                      "format": {"type": "topojson", "feature": "LGA_POLYGON"}
-                    },
-                    "key": "properties.LGA_NAME",
-                    "fields": ["geometry"]
-                  },
-                  "as": ["geo"]
-                }
+              "data":{"url":"https://raw.githubusercontent.com/ltan0120/Final-3179/main/Data%20cleaned%20with%20Year.csv"},
+              "transform":[
+                {"filter":"datum.Year == year_selection1"},
+                {"lookup":"LGA","from":{"data":{"url":"https://raw.githubusercontent.com/ltan0120/Final-3179/main/mapshaperoutput2.json","format":{"type":"topojson","feature":"LGA_POLYGON"}},"key":"properties.LGA_NAME","fields":["geometry"]},"as":["geo"]}
               ],
-              "mark": {"type": "geoshape", "stroke": "BLACK", "strokeWidth": 0.5},
-              "encoding": {
-                "shape": {"field": "geo", "type": "geojson"},
-                "color": {
-                  "field": "Number of Deaths Per 100,000",
-                  "type": "quantitative",
-                  "scale": {
-                    "domain": [2, 5, 7.5, 10, 15, 20, 25],
-                    "range": ["#fcae91", "#fb6a4a", "#ef3b2c", "#cb181d", "#99000d", "#69030b"]
-                  },
-                  "legend": {"title": "Deaths per 100,000"},
-                  "condition": {"test": "datum['Number of Deaths Per 100,000'] == null", "value": "#FFFFFF"}
-                },
-                "tooltip": [
-                  {"field": "LGA", "type": "nominal", "title": "Local Government Area"},
-                  {"field": "Number of Deaths Per 100,000", "type": "quantitative", "title": "Deaths per 100,000", "format": ".2f"},
-                  {"field": "Population", "type": "quantitative", "title": "Population", "format": ","},
-                  {"field": "Year", "type": "ordinal", "title": "Year"}
-                ]
+              "mark":{"type":"geoshape","stroke":"BLACK","strokeWidth":0.5},
+              "encoding":{
+                "shape":{"field":"geo","type":"geojson"},
+                "color":{"field":"Number of Deaths Per 100,000","type":"quantitative","scale":{"domain":[2,5,7.5,10,15,20,25],"range":["#fcae91","#fb6a4a","#ef3b2c","#cb181d","#99000d","#69030b"]},"legend":{"title":"Deaths per 100,000"},"condition":{"test":"datum['Number of Deaths Per 100,000'] == null","value":"#FFFFFF"}},
+                "tooltip":[{"field":"LGA","title":"Local Government Area"},{"field":"Number of Deaths Per 100,000","title":"Deaths per 100,000","format":".2f"},{"field":"Population","title":"Population","format":","},{"field":"Year","title":"Year"}]
               }
             },
             {
-              "data": {
-                "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/Data%20cleaned%20with%20Year.csv"
-              },
-              "transform": [
-                {"filter": "datum.Year == year_selection"},
-                {"calculate": "toNumber(datum['Number of Deaths Per 100,000'])", "as": "DeathsPer100k"},
-                {"window": [{"op": "rank", "as": "rank"}], "sort": [{"field": "DeathsPer100k", "order": "descending"}]},
-                {"filter": "datum.rank == 1"},
-                {"calculate": "datum['LGA'] + ' highest deaths per 100k: ' + format(datum['DeathsPer100k'], '.2f')", "as": "label"}
+              "data":{"url":"https://raw.githubusercontent.com/ltan0120/Final-3179/main/Data%20cleaned%20with%20Year.csv"},
+              "transform":[
+                {"filter":"datum.Year == year_selection1"},
+                {"calculate":"toNumber(datum['Number of Deaths Per 100,000'])","as":"DeathsPer100k"},
+                {"window":[{"op":"rank","as":"rank"}],"sort":[{"field":"DeathsPer100k","order":"descending"}]},
+                {"filter":"datum.rank == 1"},
+                {"calculate":"datum['LGA'] + ' highest death rate per 100,000 individuals: ' + format(datum['DeathsPer100k'], '.2f')","as":"label"}
               ],
-              "mark": {"type": "text", "x": 400, "y": 100, "fontSize": 11, "fontWeight": "bold", "color": "black", "align": "center"},
-              "encoding": {"text": {"field": "label", "type": "nominal"}}
+              "mark":{"type":"text","x":400,"y":100,"fontSize":11,"fontWeight":"bold","color":"black","align":"center"},
+              "encoding":{"text":{"field":"label"}}
             }
           ]
         }
       ]
     };
 
+    // Embed charts
+    vegaEmbed('#vis2', spec2, {actions: true});
     vegaEmbed('#vis', spec, {actions: true});
   </script>
 </body>
