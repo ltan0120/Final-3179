@@ -6,8 +6,8 @@
     "fontSize": 20,
     "fontWeight": "bold"
   },
-  "width": 250,
-  "height": 300,
+  "width": 500,
+  "height": 400,
   "data": {
     "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/Number%20of%20deaths%20MvF.csv"
   },
