@@ -1,0 +1,63 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "title": "Workplace Injury Claims Heatmap",
+  "data": {
+    "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/Number%20of%20workplace%20Claims%20-%20Heatmap.csv"
+  },
+  "params": [
+    {
+      "name": "year_filter",
+      "value": 2018,
+      "bind": {
+        "input": "select",
+        "options": [2018, 2019, 2020, 2021, 2022],
+        "name": "Select Year: "
+      }
+    }
+  ],
+  "transform": [
+    {
+      "filter": "datum.Year == year_filter"
+    }
+  ],
+  "mark": "rect",
+  "width": 500,
+  "height": 150,
+  "encoding": {
+    "x": {
+      "field": "Age",
+      "type": "ordinal",
+      "title": "Age Group",
+      "axis": {"labelAngle": 0},
+    },
+    "y": {
+      "field": "Gender",
+      "type": "ordinal",
+      "title": "Gender"
+    },
+    "color": {
+      "field": "Number of Workplace Injury Claims",
+      "type": "quantitative",
+      "scale": {"scheme": "blues", "domain": [0, 4700]},
+      "title": "Number of Claims"
+    },
+    "tooltip": [
+      {"field": "Gender", "type": "nominal"},
+      {"field": "Age", "type": "nominal"},
+      {"field": "Year", "type": "ordinal"},
+      {
+        "field": "Number of Workplace Injury Claims",
+        "type": "quantitative",
+        "format": ",",
+        "title": "Number of Claims"
+      }
+    ]
+  },
+  "config": {
+    "view": {"stroke": "transparent"},
+    "axis": {
+      "labelFontSize": 12,
+      "titleFontSize": 14
+    }
+  }
+}
