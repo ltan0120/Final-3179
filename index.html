@@ -148,7 +148,7 @@
                 {"calculate": "toNumber(datum['Number of Deaths Per 100,000'])", "as": "DeathsPer100k"},
                 {"window": [{"op": "rank", "as": "rank"}], "sort": [{"field": "DeathsPer100k", "order": "descending"}]},
                 {"filter": "datum.rank == 1"},
-                {"calculate": "datum['LGA'] + ' highest deaths per 100k: ' + format(datum['DeathsPer100k'], '.2f')", "as": "label"}
+                {"calculate": "datum['LGA'] + ' highest death rate per 100k: ' + format(datum['DeathsPer100k'], '.2f')", "as": "label"}
               ],
               "mark": {"type": "text", "x": 400, "y": 100, "fontSize": 11, "fontWeight": "bold", "color": "black", "align": "center"},
               "encoding": {"text": {"field": "label", "type": "nominal"}}
