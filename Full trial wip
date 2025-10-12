@@ -66,7 +66,7 @@
       box-shadow: 0 0 6px rgba(0,0,0,0.1);
       padding: 10px;
       width: 100%;
-      max-width: 1200px;
+      max-width: 1300px;
     }
   </style>
 </head>
@@ -116,7 +116,7 @@
             "fontSize": 18,
             "fontWeight": "bold"
           },
-          "width": 500,
+          "width": 700,
           "height": 400,
           "data": {
             "url": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/Number%20of%20deaths%20MvF.csv"
@@ -129,7 +129,7 @@
                 {
                   "mark": {"type": "image", "width": 50, "height": 50},
                   "encoding": {
-                    "x": {"value": 100},
+                    "x": {"value": 180},
                     "y": {"value": 35},
                     "url": {"value": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/female%20icon.png"}
                   }
@@ -137,7 +137,7 @@
                 {
                   "mark": {"type": "text", "text": "Female", "align": "center", "fontWeight": "bold"},
                   "encoding": {
-                    "x": {"value": 100},
+                    "x": {"value": 180},
                     "y": {"value": 95},
                     "color": {"value": "#e377c2"}
                   }
@@ -146,7 +146,7 @@
                 {
                   "mark": {"type": "image", "width": 50, "height": 50},
                   "encoding": {
-                    "x": {"value": 365},
+                    "x": {"value": 580},
                     "y": {"value": 35},
                     "url": {"value": "https://raw.githubusercontent.com/ltan0120/Final-3179/main/male%20icon.png"}
                   }
@@ -154,7 +154,7 @@
                 {
                   "mark": {"type": "text", "text": "Male", "align": "center", "fontWeight": "bold"},
                   "encoding": {
-                    "x": {"value": 365},
+                    "x": {"value": 580},
                     "y": {"value": 95},
                     "color": {"value": "#1f77b4"}
                   }
@@ -165,21 +165,39 @@
               "hconcat": [
                 // Female bars
                 {
+                  "width": 330,
                   "transform": [
                     {"filter": "datum.Gender == 'Female'"},
                     {"calculate": "-datum['Number of Fatalities']", "as": "fatalities"}
                   ],
-                  "mark": "bar",
-                  "encoding": {
-                    "y": {"field": "Age","type": "ordinal","sort": ["15 - 24","25 - 34","35 - 44","45 - 54","55 - 64","65 +"],"axis": null},
-                    "x": {"aggregate": "sum","field": "fatalities","title": "Number of Fatalities","scale":{"domain":[-22,0]},"axis":{"format":"d","labelExpr":"abs(datum.value)"}},
-                    "color": {"field": "Gender","scale":{"range":["#e377c2","#1f77b4"]},"legend": null},
-                    "tooltip":[{"field":"Age"},{"field":"Number of Fatalities"},{"field":"Gender"}]
-                  }
+                  "layer": [
+                    {
+                      "mark": "bar",
+                      "encoding": {
+                        "y": {"field": "Age","type": "ordinal","sort": ["15 - 24","25 - 34","35 - 44","45 - 54","55 - 64","65 +"],"axis": null},
+                        "x": {"aggregate": "sum","field": "fatalities","title": "Number of Fatalities","scale":{"domain":[-22,0]},"axis":{"format":"d","labelExpr":"abs(datum.value)"}},
+                        "color": {"field": "Gender","scale":{"range":["#e377c2","#1f77b4"]},"legend": null},
+                        "tooltip":[{"field":"Age"},{"field":"Number of Fatalities"},{"field":"Gender"}]
+                      }
+                    },
+                    // Annotation for highest female fatalities
+                    {
+                      "transform": [
+                        {"window":[{"op":"rank","as":"rank"}],"sort":[{"field":"Number of Fatalities","order":"descending"}]},
+                        {"filter":"datum.Gender == 'Female' && datum.rank == 1"}
+                      ],
+                      "mark": {"type": "text", "dy": -5, "fontSize": 12, "fontWeight": "bold", "color": "black", "align": "center"},
+                      "encoding": {
+                        "x": {"aggregate": "sum","field": "fatalities"},
+                        "y": {"field": "Age"},
+                        "text": {"field": "Number of Fatalities"}
+                      }
+                    }
+                  ]
                 },
                 // Age labels
                 {
-                  "width": 25,
+                  "width": 40,
                   "view": {"stroke": null},
                   "mark": {"type": "text","align":"center"},
                   "encoding": {
@@ -189,19 +207,37 @@
                 },
                 // Male bars
                 {
+                  "width": 330,
                   "transform": [{"filter": "datum.Gender == 'Male'"}],
-                  "mark": "bar",
-                  "encoding": {
-                    "y":{"field":"Age","type":"ordinal","sort":["15 - 24","25 - 34","35 - 44","45 - 54","55 - 64","65 - 74","75 +"],"axis": null},
-                    "x":{"aggregate":"sum","field":"Number of Fatalities","title":"Number of Fatalities","scale":{"domain":[0,22]},"axis":{"format":"d"}},
-                    "color":{"field":"Gender","scale":{"range":["#e377c2","#1f77b4"]},"legend": null},
-                    "tooltip":[{"field":"Age"},{"field":"Number of Fatalities"},{"field":"Gender"}]
-                  }
+                  "layer": [
+                    {
+                      "mark": "bar",
+                      "encoding": {
+                        "y":{"field":"Age","type":"ordinal","sort":["15 - 24","25 - 34","35 - 44","45 - 54","55 - 64","65 - 74","75 +"],"axis": null},
+                        "x":{"aggregate":"sum","field":"Number of Fatalities","title":"Number of Fatalities","scale":{"domain":[0,22]},"axis":{"format":"d"}},
+                        "color":{"field":"Gender","scale":{"range":["#e377c2","#1f77b4"]},"legend": null},
+                        "tooltip":[{"field":"Age"},{"field":"Number of Fatalities"},{"field":"Gender"}]
+                      }
+                    },
+                    // Annotation for highest male fatalities
+                    {
+                      "transform": [
+                        {"window":[{"op":"rank","as":"rank"}],"sort":[{"field":"Number of Fatalities","order":"descending"}]},
+                        {"filter":"datum.Gender == 'Male' && datum.rank == 1"}
+                      ],
+                      "mark": {"type": "text", "dy": -5, "fontSize": 12, "fontWeight": "bold", "color": "black", "align": "center"},
+                      "encoding": {
+                        "x": {"aggregate": "sum","field":"Number of Fatalities"},
+                        "y": {"field": "Age"},
+                        "text": {"field": "Number of Fatalities"}
+                      }
+                    }
+                  ]
                 }
               ]
             }
           ],
-          "config": {"view": {"stroke": null},"axis":{"grid": false}}
+          "config": {"view":{"stroke": null},"axis":{"grid": false}}
         },
         {
           "title": {
@@ -210,7 +246,7 @@
             "fontSize": 18,
             "fontWeight": "bold"
           },
-          "width": 500,
+          "width": 300,
           "height": 220,
           "data": {"url":"https://raw.githubusercontent.com/ltan0120/Final-3179/main/Number%20of%20workplace%20Claims%20-%20Heatmap.csv"},
           "transform": [{"filter":"datum.Year == year_selection2"}],
