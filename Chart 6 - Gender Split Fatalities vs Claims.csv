@@ -1,0 +1,25 @@
+Gender,Age,Value,Total
+Female,15 - 24,Workplace Claims,4251
+Female,15 - 24,Workplace Fatalities,2
+Female,25 - 34,Workplace Claims,9900
+Female,25 - 34,Workplace Fatalities,6
+Female,35 - 44,Workplace Claims,10136
+Female,35 - 44,Workplace Fatalities,7
+Female,45 - 54,Workplace Claims,15258
+Female,45 - 54,Workplace Fatalities,4
+Female,55 - 64,Workplace Claims,12148
+Female,55 - 64,Workplace Fatalities,6
+Female,65+,Workplace Claims,1857
+Female,65+,Workplace Fatalities,3
+Male,15 - 24,Workplace Claims,8615
+Male,15 - 24,Workplace Fatalities,15
+Male,25 - 34,Workplace Claims,17822
+Male,25 - 34,Workplace Fatalities,41
+Male,35 - 44,Workplace Claims,17796
+Male,35 - 44,Workplace Fatalities,42
+Male,45 - 54,Workplace Claims,21368
+Male,45 - 54,Workplace Fatalities,61
+Male,55 - 64,Workplace Claims,20872
+Male,55 - 64,Workplace Fatalities,83
+Male,65+,Workplace Claims,5202
+Male,65+,Workplace Fatalities,83
