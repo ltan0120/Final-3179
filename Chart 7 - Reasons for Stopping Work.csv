@@ -1,0 +1,13 @@
+﻿Parent,Reason,Gender,Percent
+Ceased Working,Result of Injury,Male,2.00
+Ceased Working,Laid off,Male,6.10
+Ceased Working,Job was Temporary,Male,0.90
+Ceased Working,Unsatisfactory work arrangements,Male,2.40
+Ceased Working,Returned to studies,Male,0.60
+Ceased Working,Result of Injury,Female,7.90
+Ceased Working,Laid off,Female,4.10
+Ceased Working,Job was Temporary,Female,0.90
+Ceased Working,Unsatisfactory work arrangements,Female,6.80
+Ceased Working,Returned to studies,Female,0.30
+Still Working,Still working where Injury Occrued,Male,88.00
+Still Working,Still working where Injury Occrued,Female,80.00
