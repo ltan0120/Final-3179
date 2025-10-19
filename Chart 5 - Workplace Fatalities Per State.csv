@@ -1,4 +1,4 @@
-LGA,Population,Year,Number of Deaths,Total Deaths,"Number of Deaths Per 100,000"
+LGA,Population,Year,Number of Deaths,Total Deaths,"DeathsPer100k"
 ARARAT,11686,2018,0,2,0
 BALLARAT,121050,2018,4,16,3.3
 BAW BAW,61905,2018,1,5,1.62
@@ -349,3 +349,4 @@ WODONGA,44824,2022,0,4,0
 WYNDHAM,337009,2022,1,9,0.3
 YARRA,100706,2022,1,9,0.99
 YARRA RANGES,160137,2022,2,9,1.25
+
